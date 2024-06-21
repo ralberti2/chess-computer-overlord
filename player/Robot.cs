@@ -61,8 +61,11 @@ class Robot : Player
 
                 MoveTree treeRoot = new MoveTree(node);
                 MoveTree movetree = moveTree(treeRoot, newPosition, enemy, me, level, treeRoot.Root());
+                movetree.Print(movetree.Root());
+                Console.Write(movetree.Root().Eval());
+                Console.Read();
 
-                movetrees[newPosition.Evaluation()] = movetree;
+                movetrees[movetree.Root().Eval()] = movetree;
             }
         }
 
@@ -93,10 +96,10 @@ class Robot : Player
                 node = new Node(move, eval);
 
                 _movetree = _movetree.Insert(node, _root);
+                //_movetree = moveTree(_movetree, newPosition, enemy, me, level - 1, node);
             }
         }
 
-        _movetree = moveTree(_movetree, newPosition, enemy, me, level - 1, node);
         return _movetree;
     }
 

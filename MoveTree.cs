@@ -27,6 +27,8 @@ public sealed class MoveTree
         if (_root == _node)
         {
             _root.Children().Add(_move);
+            Node best = bestChildNode(root, root.Value().Piece().Side());
+            root.Eval(best.Eval());
             return root;
         }
 
@@ -43,27 +45,38 @@ public sealed class MoveTree
         return null;
     }
 
+    private Node bestChildNode(Node _root, int _side)
+    {
+        List<Node> children = _root.Children();
+        Node bestNode = _root.Children().First(); 
+
+        foreach (Node child in children)
+        {
+            if (_side == 1 && bestNode.Eval() > child.Eval())
+            {
+                bestNode = child;
+            }
+
+            if (_side == 0 && bestNode.Eval() < child.Eval())
+            {
+                bestNode = child;
+            }
+        }
+
+        return bestNode;
+    }
+
     public void Print(Node _root)
     {
         Console.Write("\n1. ");
         _root.Value().Print();
 
-        int i = 2;
-        if (_root.Children().Count > 0)
+        foreach (Node child in _root.Children())
         {
-            Console.Write("\n");
-            Console.Write(" | ");
-            Console.Write(i);
-            Console.Write(". ");
-
-            _root.Children().First().Value().Print("\t");
-            i++;
-
-            Console.Write("\n");
-            if (_root.Children().First().Children().Count > 0)
-            {
-                Print(_root.Children().First().Children().First());
-            }
+            Console.Write("child: ");
+            child.Value().Print();
+            Console.Write(child.Eval());
+            Console.Write("\t");
         }
     }
 }

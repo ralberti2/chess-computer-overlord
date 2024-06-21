@@ -34,6 +34,11 @@ public sealed class Move
         Console.WriteLine($"{piece.Shape()} from ({initialTile.Position().x}, {initialTile.Position().y}) to ({finalTile.Position().x}, {finalTile.Position().y})");
     }
 
+    public ChessPiece Piece()
+    {
+        return piece;
+    }
+
     public Move Undo()
     {
         return new Move(finalTile, initialTile);
