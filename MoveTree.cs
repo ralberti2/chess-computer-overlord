@@ -27,9 +27,9 @@ public sealed class MoveTree
         if (_root == _node)
         {
             _root.Children().Add(_move);
-            Node best = bestChildNode(root, root.Value().Piece().Side());
-            root.Eval(best.Eval());
-            return root;
+            Node best = bestChildNode(_root, _root.Value().Piece().Side());
+            _root.Eval(best.Eval());
+            return _root;
         }
 
         foreach (var child in _root.Children())
@@ -38,7 +38,9 @@ public sealed class MoveTree
             if (result != null)
             {
                 child.Children().Add(_move);
-                return root;
+                Node best = bestChildNode(child, child.Value().Piece().Side());
+                child.Eval(best.Eval());
+                return _root;
             }
         }
 
