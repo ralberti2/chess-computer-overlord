@@ -30,6 +30,41 @@ public class Board
         return gameOver;
     }
 
+    public string FEN()
+    {
+        string fen = "";
+
+        for (int i = 0; i < 8; i++)
+        {
+            int empty = 0;
+            for (int j = 0; j < 8; ++j)
+            {
+                if (tiles[i, j].Piece().Side() != 2)
+                {
+                    if (empty != 0) {
+                        fen += empty.ToString();
+                    }
+
+                    fen += tiles[i, j].Piece().Notation();
+                    empty = 0;
+                    continue;
+                }
+
+                empty++;
+            }
+
+            if (empty != 0) {
+                fen += empty.ToString();
+                fen += '/';
+                continue;
+            }
+
+            fen += '/';
+        }
+
+        return fen;
+    }
+
     public int Evaluation()
     {
         int whiteQuality = 0;
@@ -184,6 +219,30 @@ public class Board
         }
 
         Console.WriteLine("    -----------------");
+    }
+
+    public void Print(string FEN)
+    {
+        Console.Clear();
+
+        Console.WriteLine("     A B C D E F G H");
+        Console.WriteLine("    -----------------");
+
+        for (int i = 0; i < 8; i++)
+        {
+            Console.Write($" {i + 1} |");
+
+            for (int j = 0; j < 8; ++j)
+            {
+                Console.Write(tiles[i, j].Print());
+            }
+
+            Console.WriteLine(" |");
+        }
+
+        Console.WriteLine("    -----------------");
+        Console.Write("FEN: ");
+        Console.WriteLine(FEN);
     }
 
     public Dictionary<Point, ChessPiece> SidePieces(int _side)

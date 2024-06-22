@@ -3,21 +3,16 @@ class Robot : Player
     private readonly int side;
     private readonly Board board;
     private readonly string name;
-    private readonly MoveTree possibleMoves;
+    private readonly Dictionary<Board, Move> possiblePositions;
 
-    public Robot() : this(0, new Board(), new MoveTree(), "robot") { }
+    public Robot() : this(0, new Board(), new Dictionary<Board, Move>(), "robot") { }
 
-    public Robot(int _side, Board _chessBoard, MoveTree _movetree, string _name) : base(_side, _chessBoard, _name)
+    public Robot(int _side, Board _chessBoard, Dictionary<Board, Move> _positions, string _name) : base(_side, _chessBoard, _name)
     {
         side = _side;
-        possibleMoves = _movetree;
+        possiblePositions = _positions;
         board = _chessBoard;
         name = _name;
-    }
-
-    private MoveTree Moves()
-    {
-        return possibleMoves;
     }
 
     private int[] PiecesIds(Dictionary<Point, ChessPiece> pieces)
@@ -33,9 +28,14 @@ class Robot : Player
 
     public MoveTree Calculate(Board _position, int level)
     {
+        if (possiblePositions.ContainsKey(_position)) 
+        {
+            return new MoveTree(new Node(possiblePositions[_position]));
+        }
+
         Dictionary<int, MoveTree> moveMap = new Dictionary<int, MoveTree>();
-        Robot me = new Robot(Side(), _position, new MoveTree(), "robot1");
-        Robot enemy = new Robot(Side() == 1 ? 0 : 1, _position, new MoveTree(), "robot2");
+        Robot me = new Robot(Side(), _position, new Dictionary<Board, Move>(), "robot1");
+        Robot enemy = new Robot(Side() == 1 ? 0 : 1, _position, new Dictionary<Board, Move>(), "robot2");
         Board position = _position.Copy();
 
         Dictionary<int, MoveTree> movetrees = moveTrees(position, me, enemy, new Dictionary<int, MoveTree>(), level);
@@ -56,16 +56,16 @@ class Robot : Player
             {
                 copy = _position.Copy();
                 Board newPosition = copy.Update(move);
-                int eval = newPosition.Evaluation();
-                Node node = new Node(move, eval);
+                Node node = new Node(move, newPosition);
 
                 MoveTree treeRoot = new MoveTree(node);
                 MoveTree movetree = moveTree(treeRoot, newPosition, enemy, me, level, treeRoot.Root());
 
                 movetrees[movetree.Root().Eval()] = movetree;
             }
-        }
 
+        }
+        
         return movetrees;
     }
 
@@ -89,8 +89,7 @@ class Robot : Player
             {
                 copy = _position.Copy();
                 newPosition = copy.Update(move);
-                int eval = newPosition.Evaluation();
-                node = new Node(move, eval);
+                node = new Node(move, newPosition);
 
                 _movetree = _movetree.Insert(node, _root);
                 _movetree = moveTree(_movetree, newPosition, enemy, me, level - 1, node);
