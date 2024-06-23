@@ -3,11 +3,11 @@ class Robot : Player
     private readonly int side;
     private readonly Board board;
     private readonly string name;
-    private readonly Dictionary<Board, Move> possiblePositions;
+    private readonly Dictionary<string, Move> possiblePositions;
 
-    public Robot() : this(0, new Board(), new Dictionary<Board, Move>(), "robot") { }
+    public Robot() : this(0, new Board(), new Dictionary<string, Move>(), "robot") { }
 
-    public Robot(int _side, Board _chessBoard, Dictionary<Board, Move> _positions, string _name) : base(_side, _chessBoard, _name)
+    public Robot(int _side, Board _chessBoard, Dictionary<string, Move> _positions, string _name) : base(_side, _chessBoard, _name)
     {
         side = _side;
         possiblePositions = _positions;
@@ -26,21 +26,25 @@ class Robot : Player
         return ids;
     }
 
-    public MoveTree Calculate(Board _position, int level)
+    public Move Calculate(Board _position, int level)
     {
-        if (possiblePositions.ContainsKey(_position)) 
+        string FEN = _position.FEN();
+        if (possiblePositions.ContainsKey(FEN)) 
         {
-            return new MoveTree(new Node(possiblePositions[_position]));
+            Move move = possiblePositions[FEN];
+            return move;
         }
 
         Dictionary<int, MoveTree> moveMap = new Dictionary<int, MoveTree>();
-        Robot me = new Robot(Side(), _position, new Dictionary<Board, Move>(), "robot1");
-        Robot enemy = new Robot(Side() == 1 ? 0 : 1, _position, new Dictionary<Board, Move>(), "robot2");
+        Robot me = new Robot(Side(), _position, new Dictionary<string, Move>(), "robot1");
+        Robot enemy = new Robot(Side() == 1 ? 0 : 1, _position, new Dictionary<string, Move>(), "robot2");
         Board position = _position.Copy();
 
         Dictionary<int, MoveTree> movetrees = moveTrees(position, me, enemy, new Dictionary<int, MoveTree>(), level);
 
-        return Side() == 1 ? movetrees[movetrees.Keys.Max()] : movetrees[movetrees.Keys.Min()];
+        MoveTree movetree = Side() == 1 ? movetrees[movetrees.Keys.Max()] : movetrees[movetrees.Keys.Min()];
+
+        return movetree.Root().Value();
     }
 
     public Dictionary<int, MoveTree> moveTrees(Board _position, Robot me, Robot enemy, Dictionary<int, MoveTree> movetrees, int level)
@@ -63,9 +67,8 @@ class Robot : Player
 
                 movetrees[movetree.Root().Eval()] = movetree;
             }
-
         }
-        
+
         return movetrees;
     }
 
@@ -93,6 +96,10 @@ class Robot : Player
 
                 _movetree = _movetree.Insert(node, _root);
                 _movetree = moveTree(_movetree, newPosition, enemy, me, level - 1, node);
+
+                if (level == 2) {
+                    possiblePositions[newPosition.FEN()] = _movetree.bestChildNode(node).Value();
+                }
             }
         }
 

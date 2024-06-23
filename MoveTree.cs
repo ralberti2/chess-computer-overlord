@@ -24,10 +24,15 @@ public sealed class MoveTree
 
     private Node InsertIntoNode(Node _move, Node _node, Node _root)
     {
+        if (root.Children().Count > 0) {
+            Node best1 = bestChildNode(root);
+            root.Eval(best1.Eval());
+        }
+
         if (_root == _node)
         {
             _root.Children().Add(_move);
-            Node best = bestChildNode(_root, _root.Value().Piece().Side());
+            Node best = bestChildNode(_root);
             _root.Eval(best.Eval());
             return _root;
         }
@@ -37,8 +42,7 @@ public sealed class MoveTree
             var result = InsertIntoNode(_move, _node, child);
             if (result != null)
             {
-                child.Children().Add(_move);
-                Node best = bestChildNode(child, child.Value().Piece().Side());
+                Node best = bestChildNode(_root);
                 child.Eval(best.Eval());
                 return _root;
             }
@@ -47,19 +51,20 @@ public sealed class MoveTree
         return null;
     }
 
-    private Node bestChildNode(Node _root, int _side)
+    public Node bestChildNode(Node _root)
     {
         List<Node> children = _root.Children();
         Node bestNode = _root.Children().First(); 
+        int side = bestNode.Value().Piece().Side();
 
         foreach (Node child in children)
         {
-            if (_side == 1 && bestNode.Eval() > child.Eval())
+            if (side == 1 && bestNode.Eval() < child.Eval())
             {
                 bestNode = child;
             }
 
-            if (_side == 0 && bestNode.Eval() < child.Eval())
+            if (side == 0 && bestNode.Eval() > child.Eval())
             {
                 bestNode = child;
             }
@@ -72,13 +77,23 @@ public sealed class MoveTree
     {
         Console.Write("\n1. ");
         _root.Value().Print();
+        Console.Write(_root.Eval());
 
-        foreach (Node child in _root.Children())
-        {
-            Console.Write("child: ");
-            child.Value().Print();
-            Console.Write(child.Eval());
-            Console.Write("\t");
-        }
+        Node best = bestChildNode(_root);
+        best.Value().Print();
+        Console.Write(best.Eval());
+
+        Node best2 = bestChildNode(best);
+        best2.Value().Print();
+        Console.Write(best2.Eval());
+    }
+    
+    public void Log()
+    {
+        string text = "MATCH LOG" + Environment.NewLine;
+        string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        File.WriteAllText(Path.Combine(docPath, "log.tex"), text);
+        string[] lines = { "New line 132", "New line 2" };
+        File.AppendAllLines(Path.Combine(docPath, "log.tex"), lines);
     }
 }

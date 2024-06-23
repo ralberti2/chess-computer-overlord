@@ -110,7 +110,7 @@ public class Board
 
             if (blackPiecesUpdated.ContainsKey(newTiles[1].Position()))
             {
-                if (blackPiecesUpdated[newTiles[1].Position()].Notation() == 'K')
+                if (blackPiecesUpdated[newTiles[1].Position()].Notation() == 'k')
                 {
                     gameOverUpdated = new Dictionary<bool, string> { [true] = "white" };
                 }
@@ -291,7 +291,7 @@ public class Board
         int id = 1;
 
         char[] notations = {
-                'T','T','N','N','B','B','K','Q',
+                'R','R','N','N','B','B','K','Q',
                 'P','P','P','P','P','P','P','P',
             };
 

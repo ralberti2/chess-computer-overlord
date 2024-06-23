@@ -35,8 +35,8 @@ public sealed class Game
     {
         Board chessBoard = new Board();
 
-        Robot Robot0 = new Robot(1, chessBoard, new Dictionary<Board, Move>(), "robot1");
-        Robot Robot1 = new Robot(0, chessBoard, new Dictionary<Board, Move>(), "robot2");
+        Robot Robot0 = new Robot(1, chessBoard, new Dictionary<string, Move>(), "robot1");
+        Robot Robot1 = new Robot(0, chessBoard, new Dictionary<string, Move>(), "robot2");
 
         Move move = new Move();
         MoveTree movetree = new MoveTree();
@@ -46,15 +46,15 @@ public sealed class Game
 
         while (!chessBoard.GameOver())
         {
-            movetree = Robot0.Calculate(chessBoard, 2);
-            move = Robot0.MoveToPlay(movetree);
+            move = Robot0.Calculate(chessBoard, 1);
             chessBoard = chessBoard.Update(move);
-            chessBoard.Print(chessBoard.FEN());
+            chessBoard.Print();
 
-            movetree = Robot1.Calculate(chessBoard, 1);
-            move = Robot1.MoveToPlay(movetree);
+            if (chessBoard.GameOver()) break;
+
+            move = Robot1.Calculate(chessBoard, 2);
             chessBoard = chessBoard.Update(move);
-            chessBoard.Print(chessBoard.FEN());
+            chessBoard.Print();
         }
 
         WinnerPrompt(chessBoard);

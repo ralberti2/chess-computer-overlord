@@ -126,10 +126,23 @@ public abstract class ChessPiece
     {
         switch (notation)
         {
+            case 'n':
+                return new Knight(position, side, id);
+            case 'r':
+                return new Rook(position, side, id);
+            case 'p':
+                return new Pawn(position, side, id);
+            case 'q':
+                return new Queen(position, side, id);
+            case 'k':
+                return new King(position, side, id);
+            case 'b':
+                return new Bishop(position, side, id);
+
             case 'N':
                 return new Knight(position, side, id);
-            case 'T':
-                return new Tower(position, side, id);
+            case 'R':
+                return new Rook(position, side, id);
             case 'P':
                 return new Pawn(position, side, id);
             case 'Q':
@@ -138,6 +151,7 @@ public abstract class ChessPiece
                 return new King(position, side, id);
             case 'B':
                 return new Bishop(position, side, id);
+
             default:
                 return new Piece();
         }
