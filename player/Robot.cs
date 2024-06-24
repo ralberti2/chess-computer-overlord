@@ -97,17 +97,10 @@ class Robot : Player
                 _movetree = _movetree.Insert(node, _root);
                 _movetree = moveTree(_movetree, newPosition, enemy, me, level - 1, node);
 
-                if (level == 2) {
-                    possiblePositions[newPosition.FEN()] = _movetree.bestChildNode(node).Value();
-                }
+                //possiblePositions[newPosition.FEN()] = _movetree.bestChildNode(node).Value();
             }
         }
 
         return _movetree;
-    }
-
-    public Move MoveToPlay(MoveTree moves)
-    {
-        return moves.Root().Value();
     }
 }
