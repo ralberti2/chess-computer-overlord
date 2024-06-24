@@ -24,10 +24,17 @@ public sealed class MoveTree
 
     private Node InsertIntoNode(Node _move, Node _node, Node _root)
     {
+        if (root.Children().Count > 0) {
+            Node best1 = bestChildNode(root);
+            root.Eval(best1.Eval());
+        }
+
         if (_root == _node)
         {
             _root.Children().Add(_move);
-            return root;
+            Node best = bestChildNode(_root);
+            _root.Eval(best.Eval());
+            return _root;
         }
 
         foreach (var child in _root.Children())
@@ -35,35 +42,58 @@ public sealed class MoveTree
             var result = InsertIntoNode(_move, _node, child);
             if (result != null)
             {
-                child.Children().Add(_move);
-                return root;
+                Node best = bestChildNode(_root);
+                child.Eval(best.Eval());
+                return _root;
             }
         }
 
         return null;
     }
 
+    public Node bestChildNode(Node _root)
+    {
+        List<Node> children = _root.Children();
+        Node bestNode = _root.Children().First(); 
+        int side = bestNode.Value().Piece().Side();
+
+        foreach (Node child in children)
+        {
+            if (side == 1 && bestNode.Eval() < child.Eval())
+            {
+                bestNode = child;
+            }
+
+            if (side == 0 && bestNode.Eval() > child.Eval())
+            {
+                bestNode = child;
+            }
+        }
+
+        return bestNode;
+    }
+
     public void Print(Node _root)
     {
         Console.Write("\n1. ");
         _root.Value().Print();
+        Console.Write(_root.Eval());
 
-        int i = 2;
-        if (_root.Children().Count > 0)
-        {
-            Console.Write("\n");
-            Console.Write(" | ");
-            Console.Write(i);
-            Console.Write(". ");
+        Node best = bestChildNode(_root);
+        best.Value().Print();
+        Console.Write(best.Eval());
 
-            _root.Children().First().Value().Print("\t");
-            i++;
-
-            Console.Write("\n");
-            if (_root.Children().First().Children().Count > 0)
-            {
-                Print(_root.Children().First().Children().First());
-            }
-        }
+        Node best2 = bestChildNode(best);
+        best2.Value().Print();
+        Console.Write(best2.Eval());
+    }
+    
+    public void Log()
+    {
+        string text = "MATCH LOG" + Environment.NewLine;
+        string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        File.WriteAllText(Path.Combine(docPath, "log.tex"), text);
+        string[] lines = { "New line 132", "New line 2" };
+        File.AppendAllLines(Path.Combine(docPath, "log.tex"), lines);
     }
 }

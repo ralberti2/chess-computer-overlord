@@ -1,7 +1,7 @@
 class Pawn : ChessPiece
 {
     public Pawn(Point position, int side, int id)
-        : base(id, 'P', side == 1 ? " \u2659" : " \u265F", position, side == 0 ? new int[,] { { -1, -1 }, { -1, 1 }, { -1, 0 } } : new int[,] { { 1, 1 }, { 1, -1 }, { 1, 0 } }, side, 1)
+        : base(id, side == 1 ? 'P' : 'p', side == 1 ? " \u2659" : " \u265F", position, side == 0 ? new int[,] { { -1, -1 }, { -1, 1 }, { -1, 0 } } : new int[,] { { 1, 1 }, { 1, -1 }, { 1, 0 } }, side, 1)
     {
 
     }
